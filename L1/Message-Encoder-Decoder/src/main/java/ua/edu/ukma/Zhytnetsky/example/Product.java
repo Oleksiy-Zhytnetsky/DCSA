@@ -4,6 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import ua.edu.ukma.Zhytnetsky.contract.Codable;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
+
 @Data
 @AllArgsConstructor
 public final class Product implements Codable {
@@ -21,11 +25,22 @@ public final class Product implements Codable {
 
     @Override
     public byte[] encode() {
-        return new byte[0];
+        final byte[] titleBytes = this.title.getBytes(StandardCharsets.UTF_8);
+        final byte[] descriptionBytes = this.description.getBytes(StandardCharsets.UTF_8);
+
+        final ByteBuffer buffer = ByteBuffer.allocate(byteLength()).order(ByteOrder.BIG_ENDIAN);
+        buffer.putInt(titleBytes.length)
+                .put(titleBytes)
+                .putInt(descriptionBytes.length)
+                .put(descriptionBytes)
+                .putInt(this.qtyAvailable)
+                .putDouble(this.price);
+        return buffer.array();
     }
 
     @Override
     public int byteLength() {
-        return 0;
+        return 4 + 4 + 4 + 8 + this.title.getBytes(StandardCharsets.UTF_8).length
+                + this.description.getBytes(StandardCharsets.UTF_8).length;
     }
 }

@@ -26,7 +26,7 @@ public final class User implements Codable {
         final byte[] nameBytes = this.name.getBytes(StandardCharsets.UTF_8);
         final byte[] emailBytes = this.email.getBytes(StandardCharsets.UTF_8);
 
-        ByteBuffer buffer = ByteBuffer.allocate(byteLength()).order(ByteOrder.BIG_ENDIAN);
+        final ByteBuffer buffer = ByteBuffer.allocate(byteLength()).order(ByteOrder.BIG_ENDIAN);
         buffer.putInt(nameBytes.length)
                 .put(nameBytes)
                 .putInt(emailBytes.length)
@@ -36,7 +36,7 @@ public final class User implements Codable {
 
     @Override
     public int byteLength() {
-        return this.name.getBytes(StandardCharsets.UTF_8).length
+        return 4 + 4 + this.name.getBytes(StandardCharsets.UTF_8).length
                 + this.email.getBytes(StandardCharsets.UTF_8).length;
     }
 }

@@ -23,7 +23,7 @@ public final class FeedbackReport implements Codable {
 
     @Override
     public byte[] encode() {
-        ByteBuffer buffer = ByteBuffer.allocate(byteLength()).order(ByteOrder.BIG_ENDIAN);
+        final ByteBuffer buffer = ByteBuffer.allocate(byteLength()).order(ByteOrder.BIG_ENDIAN);
         buffer.put(user.encode())
                 .put(product.encode());
         return buffer.array();
