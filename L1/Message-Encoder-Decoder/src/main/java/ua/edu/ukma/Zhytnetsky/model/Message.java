@@ -22,8 +22,10 @@ public final class Message<T extends Codable> implements Codable {
 
     @Override
     public int decode(final byte[] bytes, final int offset) {
-        // ...
-        return 0;
+        final ByteBuffer buffer = ByteBuffer.wrap(bytes, offset, bytes.length - offset).order(ByteOrder.BIG_ENDIAN);
+        this.type = buffer.getInt();
+        this.userId = buffer.getInt();
+        return this.content.decode(bytes, offset + 4 + 4);
     }
 
     @Override

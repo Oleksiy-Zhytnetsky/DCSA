@@ -35,8 +35,20 @@ public final class Packet<T extends Codable> implements Codable {
 
     @Override
     public int decode(final byte[] bytes, final int offset) {
-        // ...
-        return 0;
+        final ByteBuffer buffer = ByteBuffer.wrap(bytes, offset, bytes.length - offset).order(ByteOrder.BIG_ENDIAN);
+
+        ValidationUtils.validateMagicByte(buffer.get());
+        this.src = buffer.get();
+        this.pktId = buffer.getLong();
+        this.len = buffer.getInt();
+        this.headerCrc16 = buffer.getShort();
+        ValidationUtils.validateCrc(this.headerCrc16, bytes, offset, 14);
+
+        final int nextOffset = this.msg.decode(bytes, offset + 16);
+        this.msgCrc16 = buffer.getShort(nextOffset);
+        ValidationUtils.validateCrc(this.msgCrc16, bytes, offset + 16, this.len);
+
+        return 1 + 1 + 8 + 4 + 2 + 2 + this.len + offset;
     }
 
     @Override
@@ -54,7 +66,7 @@ public final class Packet<T extends Codable> implements Codable {
                 .put(msgBytes);
 
         this.msgCrc16 = ValidationUtils.calculateCrc(buffer.array(), 16, msgBytes.length);
-        buffer.putShort(this.headerCrc16);
+        buffer.putShort(this.msgCrc16);
 
         return buffer.array();
     }

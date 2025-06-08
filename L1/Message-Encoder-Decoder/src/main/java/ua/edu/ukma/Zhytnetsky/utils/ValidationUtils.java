@@ -1,8 +1,22 @@
 package ua.edu.ukma.Zhytnetsky.utils;
 
+import ua.edu.ukma.Zhytnetsky.config.AppConfig;
+
 public final class ValidationUtils {
 
     private ValidationUtils() {}
+
+    public static void validateMagicByte(final byte magicByte) {
+        if (magicByte != AppConfig.MAGIC_BYTE_VALUE) {
+            throw new IllegalStateException("Invalid magic byte: " + magicByte);
+        }
+    }
+
+    public static void validateCrc(final short target, final byte[] bytes, final int offset, final int length) {
+        if (target != calculateCrc(bytes, offset, length)) {
+            throw new IllegalStateException("Invalid crc: " + target);
+        }
+    }
 
     public static short calculateCrc(final byte[] bytes, final int offset, final int length) {
         int crc = 0x0000;

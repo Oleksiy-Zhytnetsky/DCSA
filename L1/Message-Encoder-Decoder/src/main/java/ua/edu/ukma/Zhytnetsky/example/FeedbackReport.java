@@ -2,6 +2,7 @@ package ua.edu.ukma.Zhytnetsky.example;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ua.edu.ukma.Zhytnetsky.contract.Codable;
 
 import java.nio.ByteBuffer;
@@ -9,10 +10,11 @@ import java.nio.ByteOrder;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public final class FeedbackReport implements Codable {
 
-    private User user;
-    private Product product;
+    private User user = new User();
+    private Product product = new Product();
 
     @Override
     public int decode(final byte[] bytes, final int offset) {

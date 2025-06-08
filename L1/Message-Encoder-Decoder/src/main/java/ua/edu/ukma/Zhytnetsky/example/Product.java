@@ -2,6 +2,7 @@ package ua.edu.ukma.Zhytnetsky.example;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ua.edu.ukma.Zhytnetsky.contract.Codable;
 
 import java.nio.ByteBuffer;
@@ -10,17 +11,32 @@ import java.nio.charset.StandardCharsets;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public final class Product implements Codable {
 
-    private String title;
-    private String description;
+    private String title = "";
+    private String description = "";
     private int qtyAvailable;
     private double price;
 
     @Override
     public int decode(final byte[] bytes, final int offset) {
-        // ...
-        return 0;
+        final ByteBuffer buffer = ByteBuffer.wrap(bytes, offset, bytes.length);
+
+        final int titleLength = buffer.getInt();
+        final byte[] titleBytes = new byte[titleLength];
+        buffer.get(titleBytes);
+        this.title = new String(titleBytes, StandardCharsets.UTF_8);
+
+        final int descriptionLength = buffer.getInt();
+        final byte[] descriptionBytes = new byte[descriptionLength];
+        buffer.get(descriptionBytes);
+        this.description = new String(descriptionBytes, StandardCharsets.UTF_8);
+
+        this.qtyAvailable = buffer.getInt();
+        this.price = buffer.getDouble();
+
+        return 4 + 4 + 4 + 8 + titleLength + descriptionLength + offset;
     }
 
     @Override

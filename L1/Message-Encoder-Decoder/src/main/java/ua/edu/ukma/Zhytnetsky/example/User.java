@@ -2,6 +2,7 @@ package ua.edu.ukma.Zhytnetsky.example;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ua.edu.ukma.Zhytnetsky.contract.Codable;
 
 import java.nio.ByteBuffer;
@@ -10,15 +11,27 @@ import java.nio.charset.StandardCharsets;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public final class User implements Codable {
 
-    private String name;
-    private String email;
+    private String name = "";
+    private String email = "";
 
     @Override
     public int decode(final byte[] bytes, final int offset) {
-        // ...
-        return 0;
+        final ByteBuffer buffer = ByteBuffer.wrap(bytes, offset, bytes.length - offset).order(ByteOrder.BIG_ENDIAN);
+
+        final int nameLength = buffer.getInt();
+        final byte[] nameBytes = new byte[nameLength];
+        buffer.get(nameBytes);
+        this.name = new String(nameBytes, StandardCharsets.UTF_8);
+
+        final int emailLength = buffer.getInt();
+        final byte[] emailBytes = new byte[emailLength];
+        buffer.get(emailBytes);
+        this.email = new String( emailBytes, StandardCharsets.UTF_8);
+
+        return 4 + 4 + nameLength + emailLength + offset;
     }
 
     @Override

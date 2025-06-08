@@ -9,9 +9,16 @@ public final class Main {
     public static void main(String[] args) {
         final User someUser = new User("Mike Smith", "mike_smith@gmail.com");
         final Packet<User> packet = new Packet<>(someUser);
-        final String encodedMessage = DisplayUtils.bytesToHexString(packet.encode());
+        final byte[] encodedMessage = packet.encode();
+        System.out.println(DisplayUtils.bytesToHexString(encodedMessage));
 
-        System.out.println(encodedMessage);
+        // Generic T type will be known from an additional packet header
+        // (int mapped into type enum?)
+        final Packet<User> decodedMessage = new Packet<>(new User());
+        decodedMessage.decode(encodedMessage, 0);
+        final User decodedUser = decodedMessage.getPayload();
+        System.out.println("Decoded user: " + decodedUser.getName()
+                + " (" + decodedUser.getEmail() + ')');
     }
 
 }
