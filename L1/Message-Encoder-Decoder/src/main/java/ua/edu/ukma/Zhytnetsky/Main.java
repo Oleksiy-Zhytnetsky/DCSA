@@ -22,7 +22,7 @@ public final class Main {
         // Generic T type will be known from an additional packet header
         // (int mapped into type enum?)
         final Packet<User> decodedMessage = new Packet<>(new User());
-        decodedMessage.decode(encodedMessage, 0);
+        decodedMessage.decode(decryptedMessage, 0);
         final User decodedUser = decodedMessage.getPayload();
         System.out.println("Decoded user:  " + decodedUser.getName()
                 + " (" + decodedUser.getEmail() + ')');
