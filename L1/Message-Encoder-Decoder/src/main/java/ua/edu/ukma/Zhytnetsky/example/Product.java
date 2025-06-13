@@ -21,7 +21,9 @@ public final class Product implements Codable {
 
     @Override
     public int decode(final byte[] bytes, final int offset) {
-        final ByteBuffer buffer = ByteBuffer.wrap(bytes, offset, bytes.length);
+        final ByteBuffer buffer = ByteBuffer
+                .wrap(bytes, offset, bytes.length - offset)
+                .order(ByteOrder.BIG_ENDIAN);
 
         final int titleLength = buffer.getInt();
         final byte[] titleBytes = new byte[titleLength];
